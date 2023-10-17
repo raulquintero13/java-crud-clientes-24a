@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +25,7 @@ public class ClienteService {
 	//consulta de todos los clientes
 	@Transactional(readOnly=true)
 	public List<Cliente> findAll(){
-		return (List<Cliente>)clienteRepository.findAll();
+		return (List<Cliente>)clienteRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
 	}
 	
 	@Transactional(readOnly=true)
