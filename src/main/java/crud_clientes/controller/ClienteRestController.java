@@ -8,12 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+
 import org.springframework.web.bind.annotation.*;
 //import org.springframework.web.bind.annotation.PathVariable;
 //import org.springframework.web.bind.annotation.RequestMapping;
 //import org.springframework.web.bind.annotation.ResponseStatus;
 //import org.springframework.web.bind.annotation.RestController;
 
+import crud_clientes.dto.ClienteDto;
 import crud_clientes.entity.Cliente;
 import crud_clientes.service.ClienteService;
 
@@ -24,13 +27,14 @@ public class ClienteRestController {
 	@Autowired
 	private ClienteService clienteService;
 	
+	@CrossOrigin(origins = "http://localhost:4200")
 	@GetMapping("/clientes")
 	@ResponseStatus(HttpStatus.OK)
 	public List< Cliente > consulta(){
 		return clienteService.findAll();
 	}
 	
-	
+	@CrossOrigin(origins = "http://localhost:4200")
 	@GetMapping("clientes/{id}")
 	public ResponseEntity<?> consultaPorId(@PathVariable Long id){
 		
@@ -57,7 +61,7 @@ public class ClienteRestController {
 		
 	}
 	
-	
+	@CrossOrigin(origins = "http://localhost:4200")
 	@DeleteMapping("/clientes/{id}")
 	public ResponseEntity<?> borraPorId(@PathVariable Long id) {
 		
@@ -81,29 +85,46 @@ public class ClienteRestController {
 		
 	}
 	
+	@CrossOrigin
 	@PostMapping("/clientes")
 	public ResponseEntity<?> create(@RequestBody ClienteDto cliente){
 		Cliente clienteNew = null;
 		Map<String, Object> response = new HashMap<>();
 		
 		try {
-			clienteNew = this.clienteService.createCliente(cliente);
+			clienteNew = this.clienteService.create(cliente);
 		}catch(DataAccessException e) {
 			response.put("mensaje", "Error al realizar el insert");
 			response.put("error", e.getMessage().concat(e.getMostSpecificCause().getLocalizedMessage().toString()));
 			return new ResponseEntity<Map<String, Object>>(response,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		response.put("mensaje", "Cliente creado con exito, con el ID");
+		response.put("mensaje", "Cliente creado con exito, con el ID"+clienteNew.getId());
 		response.put("cliente", clienteNew);
 		return new ResponseEntity<Map<String, Object>>(response,HttpStatus.OK);
 		
 		
-		
 	}
 	
+	@CrossOrigin
+	@PutMapping("/clientes")
+	public ResponseEntity<?> update(@RequestBody ClienteDto cliente){
+		Cliente clienteNew = null;
+		Map<String, Object> response = new HashMap<>();
+		try {
+			clienteNew = this.clienteService.update(cliente);
+		}catch(DataAccessException e) {
+			response.put("error", e.getMessage().concat(e.getMostSpecificCause().getLocalizedMessage().toString()));
+			response.put("mensaje", "Error al tratar de actualizar el registo " + clienteNew.getId());
+			return new ResponseEntity<Map<String, Object>>(response,HttpStatus. INTERNAL_SERVER_ERROR);
+		}
 	
+
+		response.put("mensaje", "Cliente actualizado con exito, con el ID "+clienteNew.getId());
+		response.put("cliente", clienteNew);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 	
+	}
 	
 	
 }
