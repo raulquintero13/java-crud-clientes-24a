@@ -2,11 +2,18 @@ package crud_clientes.entity;
 
 import java.util.Date;
 
+import org.springframework.data.jpa.repository.Query;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -22,8 +29,27 @@ public class Cliente {
 	@Column(name="fecha_creacion")
 	private Date createAt;
 	
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="tipoCliente_id")
+	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+	private TipoCliente tipoCliente;
+	
+	@Query("select * from clientes")
+	 public void find(){
+		
+	}
+	//jqpl
+	//https://docs.spring.io/spring-data/jpa/docs/1.5.0.RELEASE/reference/html/jpa.repositories.html
 	
 	
+	public TipoCliente getTipoCliente() {
+		
+		return tipoCliente;
+	}
+	public void setTipoCliente(TipoCliente tipoCliente) {
+		this.tipoCliente = tipoCliente;
+	}
 	public Long getId() {
 		return id;
 	}
@@ -53,6 +79,11 @@ public class Cliente {
 	}
 	public void setCreateAt(Date createAt) {
 		this.createAt = createAt;
+	}
+	@Override
+	public String toString() {
+		return "Cliente [id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + ", email=" + email
+				+ ", createAt=" + createAt + ", tipoCliente=" + tipoCliente + "]";
 	}
 	
 	

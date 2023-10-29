@@ -1,5 +1,6 @@
 package crud_clientes.service;
 
+import  java.util.NoSuchElementException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -30,9 +31,18 @@ public class ClienteService {
 	
 	@Transactional(readOnly=true)
 	public  Cliente findById(Long id) {
-		return (Cliente) clienteRepository.findById(id).orElse(null);
+		return (Cliente) clienteRepository.findById(id).get();
 	}
 	
+	
+	
+	
+	
+	public List<Cliente> todosClientes() {
+		
+		return (List<Cliente>) clienteRepository.findAllActiveClientesNative(); 
+		
+	}
 	//crear nuevo cliente
 	
 	public Cliente create(ClienteDto cliente) {
@@ -70,11 +80,13 @@ public class ClienteService {
 	@Transactional
 	public Cliente update(ClienteDto cliente) {
 		
-		Cliente clienteEntity = clienteRepository.findById(cliente.getId()).orElse(null);
+		Cliente clienteEntity = clienteRepository.findById(cliente.getId())
+				.orElseThrow(()-> new NoSuchElementException("Cliente no encontrado con el id: " + cliente.getId()));
 		
 		clienteEntity.setNombre(cliente.getNombre());
 		clienteEntity.setApellido(cliente.getApellido());
 		clienteEntity.setEmail(cliente.getEmail());
+		clienteEntity.setTipoCliente(cliente.getTipoCliente());
 		
 		
 		return clienteRepository.save(clienteEntity);

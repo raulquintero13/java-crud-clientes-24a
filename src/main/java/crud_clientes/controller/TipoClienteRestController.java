@@ -8,82 +8,64 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-
 import org.springframework.web.bind.annotation.*;
-//import org.springframework.web.bind.annotation.PathVariable;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.ResponseStatus;
-//import org.springframework.web.bind.annotation.RestController;
 
 import crud_clientes.dto.ClienteDto;
+import crud_clientes.dto.TipoClienteDto;
 import crud_clientes.entity.Cliente;
 import crud_clientes.entity.TipoCliente;
-import crud_clientes.service.ClienteService;
+import crud_clientes.service.TipoClienteService;
 
 @RestController
 @RequestMapping("/api")
-public class ClienteRestController {
+public class TipoClienteRestController {
 
 	@Autowired
-	private ClienteService clienteService;
+	private TipoClienteService tipoClienteService;
 	
-	
-	
-	@CrossOrigin(origins = "http://localhost:4200")
-	@GetMapping("/clientes-todos")
+	@CrossOrigin
+	@GetMapping("/tipo-clientes")
 	@ResponseStatus(HttpStatus.OK)
-	public List< Cliente > todosClientes(){
-		return clienteService.todosClientes();
+	public  List< TipoCliente > consulta(){
+		return tipoClienteService.findAll();
 	}
 	
-	
-	@CrossOrigin(origins = "http://localhost:4200")
-	@GetMapping("/clientes")
-	@ResponseStatus(HttpStatus.OK)
-	public List< Cliente > consulta(){
-		return clienteService.findAll();
-	}
-	
-	@CrossOrigin(origins = "http://localhost:4200")
-	@GetMapping("clientes/{id}")
+	@CrossOrigin
+	@GetMapping("/tipo-clientes/{id}")
 	public ResponseEntity<?> consultaPorId(@PathVariable Long id){
 		
-		
-		Cliente cliente = null;
-		String response="";
+		TipoCliente tipoCliente = null;
+		String response = "";
 		
 		try {
-			cliente = clienteService.findById(id);
-			
+			tipoCliente = tipoClienteService.findById(id);
 		}catch(DataAccessException e) {
 			response = "Error al realizar la consulta.";
 			response = response.concat(e.getMessage().concat(e.getMostSpecificCause().toString()));
 			return new ResponseEntity<String>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		if(cliente==null) {
-			response ="El clientecon el ID: ".concat(id.toString()).concat(" no existe en base de datos");
+		if (tipoCliente ==null) {
+			response = "Error al realizar la consulta.";
 			return new ResponseEntity<String>(response, HttpStatus.NOT_FOUND);
 		}
 		
-		return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
-		
+		return new ResponseEntity<TipoCliente>(tipoCliente, HttpStatus.OK);
 		
 	}
 	
-	@CrossOrigin(origins = "http://localhost:4200")
-	@DeleteMapping("/clientes/{id}")
+	@CrossOrigin
+	@DeleteMapping("/tipo-clientes/{id}")
 	public ResponseEntity<?> borraPorId(@PathVariable Long id) {
 		
 		Map<String, Object> response = new HashMap<>();
 		try {
-			Cliente clienteDelete = this.clienteService.findById(id);
-			if(clienteDelete==null) {
+			TipoCliente tipoClienteDelete = this.tipoClienteService.findById(id);
+			if(tipoClienteDelete==null) {
 				response.put("mensaje", "Error al eliminar. El cliente no existe en base de datos");
 				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			clienteService.delete(id);
+			tipoClienteService.delete(id);
 			
 		}catch(DataAccessException e) {
 			response.put("mensaje", "Error al eliminar en base de datos");
@@ -91,54 +73,53 @@ public class ClienteRestController {
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 			
-		response.put("mensaje", "cliente eliminado con exito");
+		response.put("mensaje", "Tipo cliente eliminado con exito");
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 		
 	}
 	
+	
 	@CrossOrigin
-	@PostMapping("/clientes")
-	public ResponseEntity<?> create(@RequestBody ClienteDto cliente){
-		Cliente clienteNew = null;
+	@PostMapping("/tipo-clientes")
+	public ResponseEntity<?> create(@RequestBody TipoClienteDto tipoCliente){
+		TipoCliente tipoClienteNew = null;
 		Map<String, Object> response = new HashMap<>();
 		
 		try {
-			clienteNew = this.clienteService.create(cliente);
+			tipoClienteNew = this.tipoClienteService.create(tipoCliente);
 		}catch(DataAccessException e) {
 			response.put("mensaje", "Error al realizar el insert");
 			response.put("error", e.getMessage().concat(e.getMostSpecificCause().getLocalizedMessage().toString()));
 			return new ResponseEntity<Map<String, Object>>(response,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		response.put("mensaje", "Cliente creado con exito, con el ID"+clienteNew.getId());
-		response.put("cliente", clienteNew);
+		response.put("mensaje", "Tipo Cliente creado con exito, con el ID" + tipoClienteNew.getId());
+		response.put("cliente", tipoClienteNew);
 		return new ResponseEntity<Map<String, Object>>(response,HttpStatus.OK);
 		
 		
 	}
 	
 	@CrossOrigin
-	@PutMapping("/clientes")
-	public ResponseEntity<?> update(@RequestBody ClienteDto cliente){
-		Cliente clienteNew = null;
-//		TipoCliente tipoCliente = new TipoCliente();
-//		tipoCliente.setId(3L);
-//		cliente.setTipoCliente(tipoCliente);
+	@PutMapping("/tipo-clientes")
+	public ResponseEntity<?> update(@RequestBody TipoClienteDto tipoCliente){
+		TipoCliente tipoClienteNew = null;
 		Map<String, Object> response = new HashMap<>();
 		try {
-			clienteNew = this.clienteService.update(cliente);
+			tipoClienteNew = this.tipoClienteService.update(tipoCliente);
 		}catch(DataAccessException e) {
 			response.put("error", e.getMessage().concat(e.getMostSpecificCause().getLocalizedMessage().toString()));
-			response.put("mensaje", "Error al tratar de actualizar el registo " + clienteNew.getId());
+			response.put("mensaje", "Error al tratar de actualizar el registo " + tipoClienteNew.getId());
 			return new ResponseEntity<Map<String, Object>>(response,HttpStatus. INTERNAL_SERVER_ERROR);
 		}
 	
 
-		response.put("mensaje", "Cliente actualizado con exito, con el ID "+clienteNew.getId() +" " + cliente.toString() );
-		response.put("cliente", clienteNew);
+		response.put("mensaje", "Tipo Cliente actualizado con exito, con el ID "+tipoClienteNew.getId());
+		response.put("cliente", tipoClienteNew);
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 	
 	}
+
 	
 	
 }

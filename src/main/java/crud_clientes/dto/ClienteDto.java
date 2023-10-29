@@ -3,10 +3,7 @@ package crud_clientes.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import crud_clientes.entity.TipoCliente;
 
 public class ClienteDto implements Serializable{
 
@@ -22,7 +19,15 @@ public class ClienteDto implements Serializable{
 	private String email;
 	private Date createAt;
 	
+	private TipoCliente tipoCliente;
 	
+	public TipoCliente getTipoCliente() {
+		return tipoCliente;
+	}
+	public void setTipoCliente(TipoCliente tipoCliente) {
+		this.tipoCliente = tipoCliente;
+	}
+
 	
 	public Long getId() {
 		return id;
@@ -54,6 +59,12 @@ public class ClienteDto implements Serializable{
 	public void setCreateAt(Date createAt) {
 		this.createAt = createAt;
 	}
+	@Override
+	public String toString() {
+		return "ClienteDto [id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + ", email=" + email
+				+ ", createAt=" + createAt + ", tipoCliente=" + tipoCliente + "]";
+	}
+	
 	
 	
 	
